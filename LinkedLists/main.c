@@ -1,14 +1,15 @@
-#include <stdio.h>
-#include "LinkedList.h"
+#include "linkedlist.h"
+
 int main() {
-    ListNode *head = AllacoteList(1);
+    SLL* head = NULL;
+    for(int i = 1; i<10; ++i)
+        InsertSLL(&head,i*10,i);
 
-    for(int i = 0; i < 5; ++i)
-    InsertLinkedList(&head,i*10,i);
+    printf("Length of linkedlist: %d\n",ListLength(head));
+    printSLList(head);
 
-   PrintLinkedList(&head);
-
+    SLL* temp =  NthNodeFromEnd(head,2);
+    printSLList(temp);
 
     return 0;
 }
-
