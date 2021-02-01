@@ -1,195 +1,192 @@
 //
-// Created by Ali Emre on 23.06.2020.
+// Created by Ali Emre on 06.01.2021.
 //
-#include "LinkedList.h"
 
-int ListLength(ListNode *head){
-    ListNode *current = head;
+#include "linkedlist.h"
+
+int ListLength(SLL *head)
+{
+    SLL *current = head;
     int count = 0;
-
-    while(current != NULL){
+    while (current != NULL){
         count++;
         current = current->next;
     }
     return count;
 }
 
-ListNode* AllacoteList(int data){
-    ListNode *newNode;
-    newNode = malloc(sizeof(ListNode));
-
-    if(!newNode){
-        printf("Memory error !!!\n");
-        return NULL;
-    }
+void InsertSLL(SLL** head,int data,int position)
+{
+    int counter = 1;
+    SLL* newNode = malloc(sizeof(SLL));
     newNode->data = data;
-    return newNode;
-}
-
-void InsertLinkedList(ListNode **head, int data, int position){
-    int k = 1;
-    ListNode *p;
-    ListNode *q = NULL;
-    ListNode *newNode;
-
-    newNode = AllacoteList(data);
-
-    p = *head;
-
+    SLL* current = *head;
+    SLL* previous;
+    //inserting begging
     if(position == 1){
-        newNode->next = p;
+        newNode->next = current;
         *head = newNode;
     }
+    //travel until position
     else{
-        while((p != NULL) && (k < position)){
-            k++;
-            q = p;
-            p = p->next;
+        while(current != NULL && counter < position){
+            counter++;
+            previous = current;
+            current = current->next;
         }
-        q->next = newNode;
-        newNode->next = p;
+        previous->next = newNode;
+        newNode->next = current;
     }
 }
 
-void DeleteLinkedList(ListNode **head,int position){
-    int k = 1;
-    ListNode *p,*q;
-
-    if(*head == NULL) {
-        printf("list is empty \n");
-        return;
-    }
-
-    p = *head;
+void DeleteNodeSLL(SLL** head, int position){
+    int counter = 1;
+    SLL* previous,*current;
+    current = *head;
 
     if(position == 1){
         *head = (*head)->next;
-        free(p);
+        free(current);
         return;
     }
+    //travel until position
     else{
-        while((p != NULL) && ( k < position)){
-            k++;
-            q = p;
-            p = p->next;
+        while(current != NULL && counter < position){
+            counter++;
+            previous = current;
+            current= current->next;
         }
-        if(p == NULL)
-            printf("Position doesn't exist");
+        if(current == NULL)
+            printf("Position doesn't exist !!\n");
         else{
-            q->next = p->next;
-            free(p);
+            previous->next = current->next;
+            free(current);
         }
     }
-
 }
 
-void PrintLinkedList(ListNode **head){
-    ListNode *iter = *head;
-    int i = 1;
-    while(iter->next != NULL){
-        printf("%d) %d\n",i,iter->data);
-        iter = iter->next;
-        ++i;
+void DeleteSLL(SLL** head){
+    SLL *auxilaryNode,*iterator;
+    iterator = *head;
+
+    while(iterator != NULL){
+        auxilaryNode = iterator->next;
+        free(iterator);
+        iterator = auxilaryNode;
     }
+    *head = NULL;
+}
+
+void printSLList(SLL *head){
+    while(head != NULL){
+        printf("%d->",head->data);
+        head = head->next;
+    }
+    printf("NULL\n");
+}
+
+void InsertDLL(DLL **head,int data, int position){
+    int counter = 1;
+    DLL *temp,*newNode;
+    newNode = malloc(sizeof(DLL));
+    newNode->data = data;
+
+    if(position == 1){ // Inserting at beginnig
+        newNode->next = *head;
+        newNode->previous = NULL;
+        if(*head != NULL)
+            (*head)->previous = newNode;
+
+        *head = newNode;
+        return;
+    }
+    temp = *head;
+    while(temp->next != NULL && counter < position -1){
+        counter++;
+        temp = temp->next;
+    }
+    if(counter != position)
+        printf("Position does NOT exist\n");
+    newNode->next = temp->next;
+    newNode->previous = temp;
+
+    if(temp->next)
+        temp->next->previous = newNode;
+
+    temp->next = newNode;
     return;
 }
 
-int FindBeginofLoop(ListNode *head){
-    ListNode *fastptr = head,*slowptr = head;
-
-    int loopExist = 0;
-
-    while(slowptr && fastptr && fastptr->next){
-       slowptr = slowptr->next;
-       fastptr = fastptr->next->next;
-
-       if(slowptr == fastptr){
-           loopExist = 1;
-           break;
-       }
+void DeleteDLL(DLL **head,int position){
+    int counter = 1;
+    DLL *temp,*temp2;
+    temp = *head;
+    if(*head == NULL){
+        printf("List is empty!\n");
+        return;
     }
-
-    if(loopExist){
-        slowptr = head;
-        while(slowptr != fastptr){
-            slowptr = slowptr->next;
-            fastptr = fastptr->next;
-        }
-        return slowptr;
+    if(position == 1){
+        *head = (*head)->next;
+        if(*head != NULL)
+            (*head)->previous = NULL;
+        free(temp);
+        return;
     }
+    while(temp->next != NULL && counter < position){
+        counter++;
+        temp = temp->next;
+    }
+    if(counter != position -1)
+        printf("Position does NOT exist!!\n");
+    temp2 = temp->previous;
+    temp2->next = temp->next;
+    if(temp->next)
+        temp->next->previous = temp2;
+    free(temp);
+    return;
+}
+
+SLL* NthNodeFromEnd(SLL *head,int NthNode){
+    SLL *thNode = NULL,*temp = head;
+
+    for(int count = 1; count < NthNode; ++count){
+        if(temp)
+            temp = temp->next;
+    }
+    while(temp){
+        if(thNode == NULL)
+            thNode = head;
+        else
+            thNode = thNode->next;
+        temp = temp->next;
+    }
+    if(thNode)
+        return thNode;
     return NULL;
 }
 
-ListNode *InsertSorted(ListNode *head, ListNode *newNode){
-    ListNode *current = head,*temp;
+int IsLooped(SLL* head){
+    SLL *fastPtr = head, *slowPtr = head;
 
-    if(!head)
-        return newNode;
-
-    while(current != NULL && current->data < newNode->data){
-        temp = current;
-        current = current->next;
+    while(fastPtr && slowPtr && fastPtr->next){
+        fastPtr = fastPtr->next->next;
+        slowPtr = slowPtr->next;
+        if(slowPtr == fastPtr)
+            return 1; // cyclic
     }
-    newNode->next = current;
-    temp->next =newNode;
-    return head;
+    return 0;
 }
 
-ListNode *ReverseList(ListNode *head){
-    ListNode *temp = NULL, *nextNode = NULL;
+SLL* FindBeginLoop(SLL* head){
+    SLL *fastPtr = head, *slowPtr = head;
+    int loopExist = IsLooped(head);
 
-    while(head){
-        nextNode = head->next;
-        head->next = temp;
-        temp = head;
-        head = nextNode;
+    if(loopExist){
+        while(slowPtr != fastPtr){
+            slowPtr = slowPtr->next;
+            fastPtr = fastPtr->next;
+        }
+        return slowPtr;
     }
-    return temp;
-}
-
-ListNode *RecursiveReverse(ListNode *head){
-    if(head == NULL)
-        return NULL;
-    if(head->next == NULL)
-        return head;
-
-    ListNode *second = head->next;
-    head->next = NULL;
-    ListNode *reverseRest = RecursiveReverse(second);
-    second->next = head;
-    return reverseRest;
-}
-
-void PrintReverse(ListNode *head){
-    if(!head)
-        return;
-
-    PrintReverse(head->next);
-    printf("%d ",head->data);
-}
-
-int IsLengthEven(ListNode *head){
-    while(head && head->next)
-        head = head->next;
-    if(!head)
-        return 0;
-    return 1;
-}
-
-ListNode *MergeSorted(ListNode *a, ListNode *b){
-    ListNode *result =  NULL;
-
-    if(a == NULL) return b;
-    if(b == NULL) return a;
-
-    if(a->data <= b->data){
-        result = a;
-        result->next = MergeSorted(a->next,b);
-    }
-    else{
-        result = b;
-        result->next = MergeSorted(a,b->next);
-    }
-    return result;
-
+    return NULL;
 }
